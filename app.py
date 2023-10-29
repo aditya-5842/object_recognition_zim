@@ -20,23 +20,23 @@ async def read_root():
 
 
 @app.post("/get_bbox_detections")
-async def get_bbox(files: UploadFile):
+async def get_bbox(file: UploadFile):
     try:
-        if allowed_file(files.filename):
+        if allowed_file(file.filename):
             # write the file
-            with open(files.filename, "wb") as f:
-                f.write(await files.read())
+            with open(file.filename, "wb") as f:
+                f.write(await file.read())
 
             # read the file
-            img = cv2.imread(filename=files.filename)
+            img = cv2.imread(filename=file.filename)
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
             print(img_rgb.shape)
             #  predict
             bbox = predict(img_rgb)
-            os.remove(files.filename)
+            os.remove(file.filename)
             # remove the file
-            return {"status": "Success", "filename": files.filename, "bboxes": bbox}
+            return {"status": "Success", "filename": file.filename, "bboxes": bbox}
         else:
             raise InvalidFileExtension
     except InvalidFileExtension as e:
